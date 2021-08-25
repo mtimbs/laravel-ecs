@@ -1,62 +1,41 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## Laravel App Configured to Deploy to ECS Fargate - Managed with AWS CDK
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This repo contains all the code necessary to configure AWS infrastructure to run autoscaling containerised applications using [AWS ECS](https://aws.amazon.com/ecs/). Specifically it leverages the [Fargate Service](https://aws.amazon.com/fargate/) for pay as you go autoscaling. Everything related to configuring infrastructure via [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/home.html) can be found in `cdk/lib/cdk-stack.ts`
+ 
+![Architecture Overview](https://public-files.gumroad.com/bp0sr18p0bg9dw8nws9ussmb4m83)
 
-## About Laravel
+For the sake of example, a Laravel application is what has been packaged up for deployment on our infrastructure. This uses a black Laravel 8.4 installation. The only change made is in `routes/api` where I have added a health-check route for the load balancer
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```php
+Route::get('/health-check', function () {
+    return response('OK', 200);
+});
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Deployments with CDK
+You'll need to install the CDK CLI
+    
+    npm install -g aws-cdk
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Then you'll need to make sure you have AWS Credentials configured on the host machine.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Useful commands
+To be run from the `/cdk` directory
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* `cdk bootstrap`   you will need to bootstrap some CDK assets the first time you deploy
+* `cdk deploy`      deploy this stack to your default AWS account/region
+* `cdk diff`        compare deployed stack with current state
+* `cdk synth`       emits the synthesized CloudFormation template
 
-## Laravel Sponsors
+**Note:** Deploying this infrastructure WILL incur charges in your AWS account. The following infrastructure costs roughly $100-150 USD/month to maintain on AWS.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Code Use
+This code is provided as is without warranty. Feel free to use any of the Docker config, or CDK code for your own projects.
 
-### Premium Partners
+## Learn More
+If you want to learn more about how this works, you can check out my short course on [Gumroad](https://michaeltimbs.gumroad.com/l/BZPcgS). It will cover everything referenced in the CDK stack in under 90 minutes.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
